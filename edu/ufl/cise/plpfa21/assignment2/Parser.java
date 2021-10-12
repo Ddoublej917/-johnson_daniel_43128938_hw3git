@@ -179,8 +179,7 @@ public class Parser implements IPLPParser {
 		funNameDefs = new ArrayList<>();
 		match(IPLPToken.Kind.KW_FUN);
 		if(isKind(t, IPLPToken.Kind.IDENTIFIER)) {
-			name = new Identifier__(t.getLine(), t.getCharPositionInLine(), t.getText(), t.getText());
-			consume();
+			name = identifier();
 		}
 		
 		match(IPLPToken.Kind.LPAREN);
@@ -233,8 +232,7 @@ public class Parser implements IPLPParser {
 	NameDef__ namedef() throws LexicalException, SyntaxException {
 		IPLPToken start = t;
 		if(isKind(t, IPLPToken.Kind.IDENTIFIER)) {
-			Identifier__ nameIdent = new Identifier__(t.getLine(), t.getCharPositionInLine(), t.getText(), t.getText());
-			consume();
+			Identifier__ nameIdent = identifier();
 			if(isKind(t, IPLPToken.Kind.COLON)) {
 				consume();
 				Type__ nameType = null;
@@ -451,8 +449,7 @@ public class Parser implements IPLPParser {
 				return e;
 			}
 			case IDENTIFIER -> {
-				consume();
-				Identifier__ expIdent = new Identifier__(start.getLine(), start.getCharPositionInLine(), start.getText(), start.getText());
+				Identifier__ expIdent = identifier();
 				switch(t.getKind()) {
 					case LPAREN -> {
 						consume();
@@ -527,6 +524,20 @@ public class Parser implements IPLPParser {
 			}
 			default -> throw new SyntaxException(t.getText(), t.getLine(), t.getCharPositionInLine());
 		}
+	}
+	
+	Identifier__ identifier() throws LexicalException, SyntaxException {
+		IPLPToken start = t;
+		Identifier__ name = null;
+		if(isKind(t, IPLPToken.Kind.IDENTIFIER)) {
+			name = new Identifier__(start.getLine(), start.getCharPositionInLine(), start.getText(), start.getText());
+			consume();
+			return name;
+		}
+		else {
+			throw new SyntaxException(t.getText(), t.getLine(), t.getCharPositionInLine());
+		}
+		
 	}
 
 	@Override
